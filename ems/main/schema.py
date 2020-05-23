@@ -95,8 +95,24 @@ class add_user(graphene.Mutation):
 		res = cur.fetchone()[0]
 		print(res)
 		# conn.commit()
+		return add_user_details(result = res)
+
+class add_user_usage(graphene.Mutation):
+	class Arguments:
+		email = graphene.String()
+		date = graphene.String()
+		start_time = graphene.String()
+		work_time = graphene.Int()
+		mode = graphene.Int()
+
+	result = graphene.Int()
+
+	def mutate(self, args, email, date, start_time, work_time, mode):
+		print(email, date, start_time, work_time, mode)
+		cur.execute("CALL add_user_usage_time('{}', '{}', '{}', {}, {});".format(email, date, start_time, work_time, mode))
+		conn.commit()
 		return add_user_details(result = 1)
-		
+
 
 class Query(graphene.ObjectType):
 	class Meta:
@@ -147,5 +163,6 @@ class Mutation(graphene.ObjectType):
 	addOrgAdmin = add_org_admin.Field()
 	addUserDetails = add_user_details.Field()
 	addUser = add_user.Field()
+	addUserUsage = add_user_usage.Field()
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
